@@ -5,8 +5,19 @@ from aiogram.types import Message
 from config import TELEGRAM_TOKEN, API_BASE_URL
 from api_client import BarAPI
 from character import BarmanPersonality
+from aiogram.client.session.aiohttp import AiohttpSession
+from aiohttp_socks import ProxyConnector
 
-bot = Bot(token=TELEGRAM_TOKEN)
+PROXY_URL = "url"
+
+# Создаем connector для aiohttp с нужным прокси
+connector = ProxyConnector.from_url(PROXY_URL)
+
+# Создаем сессию, передавая в нее connector
+session = AiohttpSession(connector=connector)
+
+# Передаем сессию в Bot
+bot = Bot(token=TELEGRAM_TOKEN, session=session)
 dp = Dispatcher()
 api = BarAPI(API_BASE_URL)
 personality = BarmanPersonality()
