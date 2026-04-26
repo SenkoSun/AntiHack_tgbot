@@ -6,24 +6,18 @@ from config import TELEGRAM_TOKEN, API_BASE_URL
 from api_client import BarAPI
 from character import BarmanPersonality
 from aiogram.client.session.aiohttp import AiohttpSession
+from aiohttp import ClientSession, TCPConnector
 from aiohttp_socks import ProxyConnector
+    
+PROXY_URL = "socks5://206.123.156.213:6510"
 
-PROXY_URL = "url"
-
-# Создаем connector для aiohttp с нужным прокси
-connector = ProxyConnector.from_url(PROXY_URL)
-
-# Создаем сессию, передавая в нее connector
-session = AiohttpSession(connector=connector)
-
-# Передаем сессию в Bot
-bot = Bot(token=TELEGRAM_TOKEN, session=session)
-dp = Dispatcher()
 api = BarAPI(API_BASE_URL)
 personality = BarmanPersonality()
-
-# Хранилище состояний пользователей
 user_states = {}
+
+
+
+dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
@@ -101,7 +95,7 @@ async def cmd_mix(message: Message):
     args = message.text.split(maxsplit=1)
     
     if len(args) < 2:
-        await message.answer("🍸 *Использование:* `/mix ингредиент 1, ингредиент 2, ...`\n\nПример: `/mix водка, сок`", parse_mode="Markdown")
+        await message.answer("🍸 *Использование:* `/mix ингредиент1, ингредиент2, ...`\n\nПример: `/mix водка, сок`", parse_mode="Markdown")
         return
     
     ingredients_raw = args[1].strip()
@@ -167,7 +161,7 @@ async def cmd_history(message: Message):
         
         if orders:
             history_text = "📜 *История заказов:*\n\n"
-            for i, order in enumerate(orders[-10:], 1):  # последние 10
+            for i, order in enumerate(orders[-10:], 1):
                 method_emoji = "🍹" if order["method"] == "order" else "🔀"
                 history_text += f"{i}. {method_emoji} *{order['drink']}* — {order['price']} монет\n"
             
@@ -201,7 +195,16 @@ async def cmd_reset(message: Message):
         await message.answer("❌ Не получилось сбросить. Может, ты вообще не регистрировался? /start")
 
 async def main():
-    print("🍸 Велкий бармен в работе")
+    
+    # Создаём прокси-коннектор
+    # connector = ProxyConnector.from_url(PROXY_URL)
+    # session = ClientSession(connector=connector)
+    # session = AiohttpSession(proxy= PROXY_URL)
+    
+    # Передаем сессию напрямую в Bot
+    bot = Bot(token=TELEGRAM_TOKEN)
+    
+    print("🍸 Великий бармен вышел на работу")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":

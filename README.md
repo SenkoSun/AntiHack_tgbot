@@ -28,6 +28,6 @@ He comments on every action based on your balance, rank, and behavior.
 ## 🚀 Run locally
 
 ```bash
-git clone https://github.com/yourusername/AntiHack_tgbot.git
+git clone https://github.com/SenkoSun/AntiHack_tgbot.git
 cd AntiHack_tgbot
 pip install -r requirements.txt
